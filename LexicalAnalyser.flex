@@ -18,13 +18,15 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 CommentSymbol = [cC*dD!]
 Comment = [^] {CommentSymbol} {WhiteSpace} {InputCharacter}* {LineTerminator}?
 
+Comments = [^] {CommentSymbol} {InputCharacter}* {LineTerminator}
+
 LetterLower = [a-z]
 LetterUpper = [A-Z]
 Number = [0-9]
 
-Identifier = ({LetterLower}|{LetterUpper})({LetterLower}|{LetterUpper}|{Number})*
+Identifier = ({LetterLower}|{LetterUpper})({LetterLower}|{LetterUpper}|{Number})+
 
 %%
-{Identifier} {System.out.println(counter + " Token: " + yytext()); counter++;}
-{Comment} {}
-{WhiteSpace} {}
+{Comments} {}
+{Identifier} {System.out.println(yytext());}
+
