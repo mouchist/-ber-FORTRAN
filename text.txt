@@ -11,3 +11,4 @@ can
 CAN
 dodo
 DODO
+PRINT ! comment

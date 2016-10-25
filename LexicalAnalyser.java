@@ -23,16 +23,16 @@ class LexicalAnalyser {
    * l is of the form l = 2*k, k a non negative integer
    */
   private static final int ZZ_LEXSTATE[] = { 
-     0, 0
+     0, 1
   };
 
   /** 
    * Translates characters to character classes
    */
   private static final String ZZ_CMAP_PACKED = 
-    "\11\0\1\0\1\2\1\0\1\0\1\3\22\0\1\0\1\4\10\0"+
-    "\1\4\5\0\12\6\7\0\2\5\2\1\26\5\6\0\2\5\1\1"+
-    "\1\1\26\5\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uff95\0";
+    "\11\0\1\4\1\2\1\5\1\6\1\3\22\0\1\4\1\1\10\0"+
+    "\1\1\5\0\12\0\7\0\2\0\2\1\26\0\6\0\2\0\1\1"+
+    "\1\1\26\0\12\0\1\5\u1fa2\0\1\5\1\5\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\udfe6\0";
 
   /** 
    * Translates characters to character classes
@@ -45,10 +45,10 @@ class LexicalAnalyser {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\1\0\2\1\1\0\2\2\2\3";
+    "\2\0\1\1\2\2\1\1\1\0\2\3\1\4";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[8];
+    int [] result = new int[10];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -73,10 +73,11 @@ class LexicalAnalyser {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\7\0\16\0\25\0\34\0\43\0\52\0\61";
+    "\0\0\0\7\0\16\0\16\0\25\0\34\0\34\0\16"+
+    "\0\43\0\16";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[8];
+    int [] result = new int[10];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -99,13 +100,12 @@ class LexicalAnalyser {
   private static final int [] ZZ_TRANS = zzUnpackTrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\2\1\3\3\2\1\3\1\2\1\0\1\4\2\0"+
-    "\1\4\3\0\1\5\2\0\1\4\2\6\2\4\1\7"+
-    "\1\10\4\4\1\5\1\7\1\10\1\4\2\5\1\0"+
-    "\1\6\3\0\2\6\11\0\1\7\4\0";
+    "\2\3\1\4\1\5\1\4\1\3\1\4\1\3\1\6"+
+    "\1\4\1\5\1\4\1\3\1\4\11\0\1\4\4\0"+
+    "\2\7\1\10\1\11\1\7\2\10\2\0\1\12\4\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[56];
+    int [] result = new int[42];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -143,10 +143,10 @@ class LexicalAnalyser {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\1\0\2\1\1\0\2\1\1\11\1\1";
+    "\2\0\2\11\2\1\1\0\1\11\1\1\1\11";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[8];
+    int [] result = new int[10];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -245,7 +245,7 @@ public static int counter = 1;
     char [] map = new char[0x110000];
     int i = 0;  /* index in packed string  */
     int j = 0;  /* index in unpacked array */
-    while (i < 78) {
+    while (i < 88) {
       int  count = packed.charAt(i++);
       char value = packed.charAt(i++);
       do map[j++] = value; while (--count > 0);
@@ -525,11 +525,44 @@ public static int counter = 1;
         }
         if (zzPeek) yyline--;
       }
+      if (zzMarkedPosL > zzStartRead) {
+        switch (zzBufferL[zzMarkedPosL-1]) {
+        case '\n':
+        case '\u000B':
+        case '\u000C':
+        case '\u0085':
+        case '\u2028':
+        case '\u2029':
+          zzAtBOL = true;
+          break;
+        case '\r': 
+          if (zzMarkedPosL < zzEndReadL)
+            zzAtBOL = zzBufferL[zzMarkedPosL] != '\n';
+          else if (zzAtEOF)
+            zzAtBOL = false;
+          else {
+            boolean eof = zzRefill();
+            zzMarkedPosL = zzMarkedPos;
+            zzEndReadL = zzEndRead;
+            zzBufferL = zzBuffer;
+            if (eof) 
+              zzAtBOL = false;
+            else 
+              zzAtBOL = zzBufferL[zzMarkedPosL] != '\n';
+          }
+          break;
+        default:
+          zzAtBOL = false;
+        }
+      }
       zzAction = -1;
 
       zzCurrentPosL = zzCurrentPos = zzStartRead = zzMarkedPosL;
   
-      zzState = ZZ_LEXSTATE[zzLexicalState];
+      if (zzAtBOL)
+        zzState = ZZ_LEXSTATE[zzLexicalState+1];
+      else
+        zzState = ZZ_LEXSTATE[zzLexicalState];
 
       // set up zzAction for empty match case:
       int zzAttributes = zzAttrL[zzState];
@@ -594,15 +627,25 @@ public static int counter = 1;
           case 1: 
             { System.out.print(yytext());
             }
-          case 4: break;
-          case 2: 
-            { System.out.println(yytext());
-            }
           case 5: break;
-          case 3: 
+          case 2: 
             { 
             }
           case 6: break;
+          case 3: 
+            // lookahead expression with fixed lookahead length
+            zzMarkedPos = Character.offsetByCodePoints
+                (zzBufferL, zzStartRead, zzEndRead - zzStartRead, zzMarkedPos, -1);
+            { 
+            }
+          case 7: break;
+          case 4: 
+            // lookahead expression with fixed lookahead length
+            zzMarkedPos = Character.offsetByCodePoints
+                (zzBufferL, zzStartRead, zzEndRead - zzStartRead, zzMarkedPos, -2);
+            { 
+            }
+          case 8: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }
