@@ -16,7 +16,7 @@ InputCharacter = [^\r\n]
 WhiteSpace = {LineTerminator} | [ \t\f]
 
 CommentSymbol = [cC*dD!]
-Comment = [^] {CommentSymbol} {WhiteSpace} {InputCharacter}* {LineTerminator}?
+Comment = {CommentSymbol} {WhiteSpace}* {InputCharacter}* {LineTerminator}?
 
 LetterLower = [a-z]
 LetterUpper = [A-Z]
@@ -26,5 +26,5 @@ Identifier = ({LetterLower}|{LetterUpper})({LetterLower}|{LetterUpper}|{Number})
 
 %%
 {Identifier} {System.out.println(counter + " Token: " + yytext()); counter++;}
-{Comment} {}
+^{Comment}$ {}
 {WhiteSpace} {}
