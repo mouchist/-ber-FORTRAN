@@ -1,4 +1,4 @@
-PRINT
+PRINT*,
 HELLO
 ! this is a comment
 AA
@@ -12,3 +12,7 @@ CAN
 dodo
 DODO
 PRINT ! comment
+ can
+	! comment
+	!sommet
+ !nos
