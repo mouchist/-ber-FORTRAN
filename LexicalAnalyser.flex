@@ -13,6 +13,10 @@
 		System.out.println((new Symbol(type, yyline+1, yycolumn+1,yytext())).toString());
 	}
 
+	private void symbol(LexicalUnit type, Object val){
+		System.out.println((new Symbol(type, yyline+1, yycolumn+1,yytext())).toString());
+	}
+
 %} 
 
 EndOfLine = "\c" ? "\n"
@@ -79,7 +83,7 @@ Identifier = [:jletter:][:jletterdigit:]*
 
 }
 
-^{CommentSymbol} .* $ {}
+^{CommentSymbol} .* {EndOfLine} {}
 {WhiteSpace} {}
 
 
