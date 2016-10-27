@@ -441,6 +441,10 @@ class LexicalAnalyser {
 		System.out.println((new Symbol(type, yyline+1, yycolumn+1,yytext())).toString());
 	}
 
+	private void symbol(LexicalUnit type, Object val){
+		System.out.println((new Symbol(type, yyline+1, yycolumn+1, val)).toString());
+	}
+
 
 
   /**
@@ -851,7 +855,7 @@ class LexicalAnalyser {
             }
           case 35: break;
           case 3: 
-            { symbol(LexicalUnit.ENDLINE);
+            { symbol(LexicalUnit.ENDLINE, " ");
             }
           case 36: break;
           case 4: 

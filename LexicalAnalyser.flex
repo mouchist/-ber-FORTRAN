@@ -14,7 +14,7 @@
 	}
 
 	private void symbol(LexicalUnit type, Object val){
-		System.out.println((new Symbol(type, yyline+1, yycolumn+1,yytext())).toString());
+		System.out.println((new Symbol(type, yyline+1, yycolumn+1, val)).toString());
 	}
 
 %} 
@@ -53,16 +53,16 @@ Identifier = [:jletter:][:jletterdigit:]*
 	"READ*"		{symbol(LexicalUnit.READ);} 
 
 	/* seperators */
-	","			{symbol(LexicalUnit.COMMA);}
-	"("			{symbol(LexicalUnit.LEFT_PARENTHESIS);}
-	")"			{symbol(LexicalUnit.RIGHT_PARENTHESIS);}
+	","		{symbol(LexicalUnit.COMMA);}
+	"("		{symbol(LexicalUnit.LEFT_PARENTHESIS);}
+	")"		{symbol(LexicalUnit.RIGHT_PARENTHESIS);}
 
 	/* operators */
-	"="			{symbol(LexicalUnit.EQUAL);}
-	"-"			{symbol(LexicalUnit.MINUS);}
-	"+"			{symbol(LexicalUnit.PLUS);}
-	"*"			{symbol(LexicalUnit.TIMES);}
-	"/"			{symbol(LexicalUnit.DIVIDE);}
+	"="		{symbol(LexicalUnit.EQUAL);}
+	"-"		{symbol(LexicalUnit.MINUS);}
+	"+"		{symbol(LexicalUnit.PLUS);}
+	"*"		{symbol(LexicalUnit.TIMES);}
+	"/"		{symbol(LexicalUnit.DIVIDE);}
 	".NOT."		{symbol(LexicalUnit.NOT);}
 	".AND."		{symbol(LexicalUnit.AND);}
 	".OR."		{symbol(LexicalUnit.OR);}
@@ -74,11 +74,11 @@ Identifier = [:jletter:][:jletterdigit:]*
 	".NE."		{symbol(LexicalUnit.DIFFERENT);}
 
 
-	{Number}		{symbol(LexicalUnit.NUMBER);}
+	{Number}	{symbol(LexicalUnit.NUMBER);}
 	{Identifier} 	{symbol(LexicalUnit.VARNAME);}
-	{Integer} 		{symbol(LexicalUnit.INTEGER);}
+	{Integer} 	{symbol(LexicalUnit.INTEGER);}
 
-	{LineTerminator} {symbol(LexicalUnit.ENDLINE);}
+	{LineTerminator} {symbol(LexicalUnit.ENDLINE, " ");}
 
 
 }
