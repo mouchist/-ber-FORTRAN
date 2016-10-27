@@ -4,6 +4,9 @@
 %line
 %standalone
 
+%caseless
+%ignorecase
+
 %{
 	private void print(String s){
 		System.out.println(s);
