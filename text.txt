@@ -1,13 +1,3 @@
-PRINT
-HELLO
-! this is a comment
-AA
-* also a comment
-PRINTING
-c another comment
-d commenting azeaeaze
-DO PRINT
-can
-CAN
-dodo
-DODO
+PRINT*,
+hello
+! comment
