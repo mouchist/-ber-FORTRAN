@@ -1,6 +1,7 @@
 import java.util.Collections; 
 import java.util.HashMap; 
 import java.util.Map;
+import java.util.ArrayList;
 
 %%
 %class LexicalAnalyser
@@ -24,16 +25,20 @@ import java.util.Map;
 	}
 
 
-	private void foundIdentifier(String identifier, int line){
-		Integer whatLine = symbolTable.get(identifier);
+	private void foundIdentifier(){
+		Integer whatLine = symbolTable.get(yytext());
   		if ( whatLine == null ) {
-      			symbolTable.put(identifier, line);
+      			symbolTable.put(yytext(), yyline+1);
   		}
 	}
 
 	private void printIdentifiers(){
+
+		ArrayList<String> id = new ArrayList<String>(symbolTable.keySet());
+		Collections.sort(id, String.CASE_INSENSITIVE_ORDER);
+
 		System.out.println("Identifiers");
-		for ( String identifier : symbolTable.keySet() ) {
+		for ( String identifier : id ) {
 			System.out.println(identifier + " " + symbolTable.get(identifier));
 		}
 	}
@@ -105,7 +110,7 @@ Identifier = [:jletter:][:jletterdigit:]*
 
 	{Number}	{symbol(LexicalUnit.NUMBER);}
 	{Identifier} 	{symbol(LexicalUnit.VARNAME);
-			foundIdentifier(yytext(), yyline+1);}
+			foundIdentifier();}
 	
 	{LineTerminator} {symbol(LexicalUnit.ENDLINE, " ");}
 
