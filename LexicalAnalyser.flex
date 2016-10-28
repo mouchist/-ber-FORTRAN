@@ -15,17 +15,26 @@ import java.util.ArrayList;
 %{
 
 	Map<String, Integer> symbolTable;
+	
+	// keeping track of the last token
+	LexicalUnit lastToken;
 
 	private void symbol(LexicalUnit type){
-		System.out.println((new Symbol(type, yyline+1, yycolumn+1,yytext())).toString());
+		symbol(type, yytext());
 	}
 
 	private void symbol(LexicalUnit type, Object val){
 		System.out.println((new Symbol(type, yyline+1, yycolumn+1, val)).toString());
+		lastToken = type;
 	}
 
 
 	private void foundIdentifier(){
+		// ignore identifier if last token was 'PROGRAM'
+		if (lastToken == LexicalUnit.PROGRAM){
+			return;
+		}
+
 		Integer whatLine = symbolTable.get(yytext());
   		if ( whatLine == null ) {
       			symbolTable.put(yytext(), yyline+1);
@@ -48,6 +57,7 @@ import java.util.ArrayList;
 %init{
 	System.out.println("Hello init");
 	symbolTable = new HashMap<String, Integer>();
+	lastToken = null;
 %init}
 
 %eof{
@@ -109,8 +119,8 @@ Identifier = [:jletter:][:jletterdigit:]*
 
 
 	{Number}	{symbol(LexicalUnit.NUMBER);}
-	{Identifier} 	{symbol(LexicalUnit.VARNAME);
-			foundIdentifier();}
+	{Identifier} 	{foundIdentifier();
+			symbol(LexicalUnit.VARNAME);}
 	
 	{LineTerminator} {symbol(LexicalUnit.ENDLINE, " ");}
 
