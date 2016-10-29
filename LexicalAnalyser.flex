@@ -10,7 +10,6 @@ import java.util.ArrayList;
 %standalone
 
 %caseless
-%ignorecase
 
 %{
 
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 		System.out.println((new Symbol(type, yyline+1, yycolumn+1, val)).toString());
 		lastToken = type;
 	}
-
 
 	private void foundIdentifier(){
 		// ignore identifier if last token was 'PROGRAM'
@@ -79,7 +77,7 @@ Identifier = [:jletter:][:jletterdigit:]*
 
 %%
 
-^{WhiteSpace}* {EndOfLine} {}
+^{WhiteSpace}* {LineTerminator} {}
 
 <YYINITIAL> {
  
@@ -126,8 +124,8 @@ Identifier = [:jletter:][:jletterdigit:]*
 
 }
 
-^{CommentSymbol} .* {EndOfLine} {}
+^{CommentSymbol} ~{LineTerminator} {}
 {WhiteSpace} {}
-
+. 			{}
 
 
