@@ -96,6 +96,7 @@ Identifier = [:jletter:][:jletterdigit:]*
 
 %%
 
+/* Empty line */
 ^{WhiteSpace}* {LineTerminator} {}
 
 <YYINITIAL> {
@@ -143,7 +144,10 @@ Identifier = [:jletter:][:jletterdigit:]*
 
 }
 
+/* Ignoring comment lines */
 ^{CommentSymbol} ~{LineTerminator} {}
+
+/* Ignoring whitespace*/
 {WhiteSpace} {}
 . 			{}
 
