@@ -12,24 +12,29 @@ import java.util.ArrayList;
 %caseless
 
 %{
-
+	// tracking of Identifiers and their first occurence
 	Map<String, Integer> symbolTable;
 	
 	// keeping track of the last token
 	LexicalUnit lastToken;
+
+	// List of all tokens
+	ArrayList<Symbol> tokenList;
 
 	private void symbol(LexicalUnit type){
 		symbol(type, yytext());
 	}
 
 	private void symbol(LexicalUnit type, Object val){
-		System.out.println((new Symbol(type, yyline+1, yycolumn+1, val)).toString());
+		//System.out.println((new Symbol(type, yyline+1, yycolumn+1, val)).toString());
+		tokenList.add(new Symbol(type, yyline+1, yycolumn+1, val));
 		lastToken = type;
 	}
 
 	private void foundIdentifier(){
 		// ignore identifier if last token was 'PROGRAM'
 		if (lastToken == LexicalUnit.PROGRAM){
+			lastToken = LexicalUnit.VARNAME;
 			return;
 		}
 
@@ -39,8 +44,20 @@ import java.util.ArrayList;
   		}
 	}
 
-	private void printIdentifiers(){
+	private void removeLastEndlineToken(){
+		Symbol s = tokenList.get(tokenList.size()-1);
+		if (s.getType() == LexicalUnit.ENDLINE){
+			tokenList.remove(s);
+		}
+	}
 
+	private void printTokens(){
+		for (Symbol s : tokenList){
+			System.out.println(s.toString());
+		}
+	}
+
+	private void printIdentifiers(){
 		ArrayList<String> id = new ArrayList<String>(symbolTable.keySet());
 		Collections.sort(id, String.CASE_INSENSITIVE_ORDER);
 
@@ -53,13 +70,15 @@ import java.util.ArrayList;
 %}
 
 %init{
-	System.out.println("Hello init");
 	symbolTable = new HashMap<String, Integer>();
 	lastToken = null;
+	tokenList = new ArrayList<Symbol>();
 %init}
 
 %eof{
-printIdentifiers();
+	removeLastEndlineToken();
+	printTokens();
+	printIdentifiers();
 %eof} 
 
 EndOfLine = "\c" ? "\n"
