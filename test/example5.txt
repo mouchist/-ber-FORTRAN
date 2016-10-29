@@ -1,0 +1,10 @@
+!comment
+ccomment
+Ccomment PRINT
+Comment	qsd
+comment	qsd
+Domment qa	aze
+domment q
+**** print* !!
+!!!!!
+c 	 print* 	print*  ccc,,

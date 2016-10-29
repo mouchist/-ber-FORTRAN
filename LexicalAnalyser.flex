@@ -45,6 +45,10 @@ import java.util.ArrayList;
 	}
 
 	private void removeLastEndlineToken(){
+		// special case if list is empty
+		if (tokenList.size() == 0){
+			return;
+		}
 		Symbol s = tokenList.get(tokenList.size()-1);
 		if (s.getType() == LexicalUnit.ENDLINE){
 			tokenList.remove(s);
@@ -93,6 +97,8 @@ CommentSymbol = [cC*dD!]
 Number = [0-9]+
 
 Identifier = [:jletter:][:jletterdigit:]*
+
+Comment = {CommentSymbol} ~{LineTerminator}
 
 %%
 
@@ -144,11 +150,8 @@ Identifier = [:jletter:][:jletterdigit:]*
 
 }
 
-/* Ignoring comment lines */
-^{CommentSymbol} ~{LineTerminator} {}
-
-/* Ignoring whitespace*/
-{WhiteSpace} {}
+^{Comment} { /* Ignore */ }
+{WhiteSpace} { /* Ignore */ }
 . 			{}
 
 
