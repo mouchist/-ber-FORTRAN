@@ -1,0 +1,10 @@
+PROGRAM hello
+	INTEGER a
+	a = 12
+	PRINT*,a
+END
+
+
+! end of program
+
+! prints 12
