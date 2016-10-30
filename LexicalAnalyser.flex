@@ -26,7 +26,6 @@ import java.util.ArrayList;
 	}
 
 	private void symbol(LexicalUnit type, Object val){
-		//System.out.println((new Symbol(type, yyline+1, yycolumn+1, val)).toString());
 		tokenList.add(new Symbol(type, yyline+1, yycolumn+1, val));
 		lastToken = type;
 	}
