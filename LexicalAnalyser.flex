@@ -79,76 +79,48 @@ import java.util.ArrayList;
    * @param argv   the command line, contains the filenames to run
    *               the scanner on.
    */ 
-  public static void RunScanner(String argv[]) {
-    if (argv.length == 0) {
-      System.out.println("Usage : java LexicalAnalyser [ --encoding <name> ] <inputfile(s)>");
-    }
-    else {
-      int firstFilePos = 0;
-      String encodingName = "UTF-8";
-      if (argv[0].equals("--encoding")) {
-        firstFilePos = 2;
-        encodingName = argv[1];
-        try {
-          java.nio.charset.Charset.forName(encodingName); // Side-effect: is encodingName valid? 
-        } catch (Exception e) {
-          System.out.println("Invalid encoding '" + encodingName + "'");
-          return;
-        }
-      }
-      for (int i = firstFilePos; i < argv.length; i++) {
-        LexicalAnalyser scanner = null;
+ 	public static void RunScanner(String argv[]) {
+	   	if (argv.length == 0) {
+			System.out.println("Usage : java LexicalAnalyser [ --encoding <name> ] <inputfile(s)>");
+		}
+		else {
+			int firstFilePos = 0;
+			String encodingName = "UTF-8";
+		  	if (argv[0].equals("--encoding")) {
+		    	firstFilePos = 2;
+		    	encodingName = argv[1];
+		    	try {
+		      		java.nio.charset.Charset.forName(encodingName); // Side-effect: is encodingName valid? 
+		    	} catch (Exception e) {
+		      		System.out.println("Invalid encoding '" + encodingName + "'");
+		      		return;
+		    	}
+		  	}
+		  	for (int i = firstFilePos; i < argv.length; i++) {
+		    	LexicalAnalyser scanner = null;
 		
-        try {
-		  
-          java.io.FileInputStream stream = new java.io.FileInputStream(argv[i]);
-          java.io.Reader reader = new java.io.InputStreamReader(stream, encodingName);
-          scanner = new LexicalAnalyser(reader);
-		  //scanner.inputFile = argv[i];
-          while ( !scanner.zzAtEOF ) scanner.yylex();
-		  scanner.export(argv[i]);
-        }
-        catch (java.io.FileNotFoundException e) {
-          System.out.println("File not found : \""+argv[i]+"\"");
-        }
-        catch (java.io.IOException e) {
-          System.out.println("IO error scanning file \""+argv[i]+"\"");
-          System.out.println(e);
-        }
-        catch (Exception e) {
-          System.out.println("Unexpected exception:");
-          e.printStackTrace();
-        }
-		
-      }
-    }
-  
-  }
-  
-  
-  public void export(String inputFile) {
-	    BufferedWriter output = null;
-        try {
-            File file = new File(inputFile+".out");
-            output = new BufferedWriter(new FileWriter(file));
-            //output.write("");
-			
-			for(int i=0 ; i< tokenList.size(); i++)
-			{
-				output.write(tokenList.get(i).toString()+"\n");
-			}
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        } finally {
-          if ( output != null ) {
-            try{
-				output.close();
-			} catch ( IOException e ) {
-				e.printStackTrace();
-			}
-          }
-        }
-  }
+		    	try {
+			  
+		      		java.io.FileInputStream stream = new java.io.FileInputStream(argv[i]);
+		      		java.io.Reader reader = new java.io.InputStreamReader(stream, encodingName);
+		      		scanner = new LexicalAnalyser(reader);
+			  		//scanner.inputFile = argv[i];
+		      		while ( !scanner.zzAtEOF ) scanner.yylex();
+		    	}
+		    	catch (java.io.FileNotFoundException e) {
+		      		System.out.println("File not found : \""+argv[i]+"\"");
+		    	}
+		    	catch (java.io.IOException e) {
+		      		System.out.println("IO error scanning file \""+argv[i]+"\"");
+		      		System.out.println(e);
+		    	}
+		    	catch (Exception e) {
+		      		System.out.println("Unexpected exception:");
+		      		e.printStackTrace();
+		    	}
+		  	}
+		}
+	}
 	
 	private void printIdentifiers(){
 		ArrayList<String> id = new ArrayList<String>(symbolTable.keySet());
