@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.io.FileWriter;
+import java.util.Collections; 
+import java.util.HashMap; 
+import java.util.Map;
+import java.util.ArrayList;
+
 %%
 %class LexicalAnalyser
 %unicode
@@ -15,31 +20,55 @@ import java.io.FileWriter;
 %type Symbol
 %{
 
-  private String inputFile = null;
-  /**
-  * Collection contains all tokens fund in the file
-  */
-  private List<Symbol> symbols ;
-  private Symbol symbol(LexicalUnit type) {
-    return new Symbol(type, yyline+1, yycolumn+1);
-  }
-
-  private Symbol symbol(LexicalUnit type, Object value) {
-    return new Symbol(type, yyline+1, yycolumn+1, value);
-  }
+	private String inputFile = null;
   
-  private void addSymbol(Symbol symbol)
-  {
-	if(symbol.getType()==LexicalUnit.ENDLINE && symbols.get(symbols.size()-1).getType() != LexicalUnit.ENDLINE) 
-	{
-		symbols.add(symbol);
-	}
-	else
-	{
-		symbols.add(symbol);
+	// tracking of Identifiers and their first occurence
+	Map<String, Integer> symbolTable;
+	
+	// keeping track of the last token
+	LexicalUnit lastToken;
 
+	// List of all tokens
+	ArrayList<Symbol> tokenList;
+
+	private void symbol(LexicalUnit type){
+		symbol(type, yytext());
 	}
-  }
+
+	private void symbol(LexicalUnit type, Object val){
+		tokenList.add(new Symbol(type, yyline+1, yycolumn+1, val));
+		lastToken = type;
+	}
+
+	private void foundIdentifier(){
+		// ignore identifier if last token was 'PROGRAM'
+		if (lastToken == LexicalUnit.PROGRAM){
+			lastToken = LexicalUnit.VARNAME;
+			return;
+		}
+
+		Integer whatLine = symbolTable.get(yytext());
+  		if ( whatLine == null ) {
+      			symbolTable.put(yytext(), yyline+1);
+  		}
+	}
+
+	private void removeLastEndlineToken(){
+		// special case if list is empty
+		if (tokenList.size() == 0){
+			return;
+		}
+		Symbol s = tokenList.get(tokenList.size()-1);
+		if (s.getType() == LexicalUnit.ENDLINE){
+			tokenList.remove(s);
+		}
+	}
+
+	private void printTokens(){
+		for (Symbol s : tokenList){
+			System.out.println(s.toString());
+		}
+	}
   
 	
   /**
@@ -96,75 +125,92 @@ import java.io.FileWriter;
   
   }
 	
+	private void printIdentifiers(){
+		ArrayList<String> id = new ArrayList<String>(symbolTable.keySet());
+		Collections.sort(id, String.CASE_INSENSITIVE_ORDER);
+
+		System.out.println("Identifiers");
+		for ( String identifier : id ) {
+			System.out.println(identifier + " " + symbolTable.get(identifier));
+		}
+	}
+
 %}
 
 %init{
-  symbols = new LinkedList();
+	symbolTable = new HashMap<String, Integer>();
+	lastToken = null;
+	tokenList = new ArrayList<Symbol>();
 %init}
 
 %eof{
+	removeLastEndlineToken();
+	printTokens();
+	printIdentifiers();
+%eof} 
 
-for(int i=0 ; i< symbols.size(); i++)
-{
-	System.out.println(symbols.get(i).toString());
-}
-%eof}
-
-
-LineTerminator = \r|\n|\r\n
-InputCharacter = [^\r\n]
+LineTerminator = \r\n|\r|\n
 
 WhiteSpace = {LineTerminator} | [ \t\f]
 
 CommentSymbol = [cC*dD!]
-Comment =  {CommentSymbol} {WhiteSpace}* {InputCharacter}*  {LineTerminator}
-INTEGER= 0 | [1-9][0-9]*
 
-VARNAME = [:jletter:] [:jletterdigit:]*
+Number = [0-9]+
+
+Identifier = [:jletter:][:jletterdigit:]*
+
+Comment = {CommentSymbol} ~{LineTerminator}
 
 %%
 
-^{WhiteSpace}*{LineTerminator}                   { /* empty lines to ignore */ }
+/* Empty line */
+^{WhiteSpace}* {LineTerminator} {}
 
 <YYINITIAL> {
 	
 	/* keywords */
-	"PROGRAM"	{addSymbol(symbol(LexicalUnit.PROGRAM,yytext()));}
-	"INTEGER"	{addSymbol(symbol(LexicalUnit.INTEGER,yytext()));}
-	"END"		{addSymbol(symbol(LexicalUnit.END,yytext()));}
-	"IF"		{addSymbol(symbol(LexicalUnit.IF,yytext()));}
-	"THEN"		{addSymbol(symbol(LexicalUnit.THEN,yytext()));}
-	"ENDIF"		{addSymbol(symbol(LexicalUnit.ENDIF,yytext()));}
-	"ELSE"		{addSymbol(symbol(LexicalUnit.ELSE,yytext()));}
-	"DO"		{addSymbol(symbol(LexicalUnit.DO,yytext()));}
-	"ENDDO"		{addSymbol(symbol(LexicalUnit.ENDDO,yytext()));}
-	"PRINT*"	{addSymbol(symbol(LexicalUnit.PRINT,yytext()));}	
-	"READ*"		{addSymbol(symbol(LexicalUnit.READ,yytext()));} 
+	"PROGRAM"	{symbol(LexicalUnit.PROGRAM);}
+	"END"		{symbol(LexicalUnit.END);}
+	"IF"		{symbol(LexicalUnit.IF);}
+	"THEN"		{symbol(LexicalUnit.THEN);}
+	"ENDIF"		{symbol(LexicalUnit.ENDIF);}
+	"ELSE"		{symbol(LexicalUnit.ELSE);}
+	"DO"		{symbol(LexicalUnit.DO);}
+	"ENDDO"		{symbol(LexicalUnit.ENDDO);}
+	"PRINT*"	{symbol(LexicalUnit.PRINT);}	
+	"READ*"		{symbol(LexicalUnit.READ);} 
+	"INTEGER" 	{symbol(LexicalUnit.INTEGER);}
+
 	/* seperators */
-	","		{addSymbol(symbol(LexicalUnit.COMMA,yytext()));}
-	"("		{addSymbol(symbol(LexicalUnit.LEFT_PARENTHESIS,yytext()));}
-	")"		{addSymbol(symbol(LexicalUnit.RIGHT_PARENTHESIS,yytext()));}
+	","		{symbol(LexicalUnit.COMMA);}
+	"("		{symbol(LexicalUnit.LEFT_PARENTHESIS);}
+	")"	{symbol(LexicalUnit.RIGHT_PARENTHESIS);}
+
 	/* operators */
-	"="			{addSymbol(symbol(LexicalUnit.EQUAL,yytext()));}
-	"-" 		{addSymbol(symbol(LexicalUnit.MINUS,yytext()));}
-	"+"	 		{addSymbol(symbol(LexicalUnit.PLUS,yytext()));}
-	"*"			{addSymbol(symbol(LexicalUnit.TIMES,yytext()));}
-	"/"			{addSymbol(symbol(LexicalUnit.DIVIDE,yytext()));}
-	".NOT."		{addSymbol(symbol(LexicalUnit.NOT,yytext()));}
-	".AND."		{addSymbol(symbol(LexicalUnit.AND,yytext()));}
-	".OR."		{addSymbol(symbol(LexicalUnit.OR,yytext()));}
-	".EQ."		{addSymbol(symbol(LexicalUnit.EQUAL_COMPARE,yytext()));}
-	".GE."		{addSymbol(symbol(LexicalUnit.GREATER_EQUAL,yytext()));}
-	".GT."		{addSymbol(symbol(LexicalUnit.GREATER,yytext()));}
-	".LE."		{addSymbol(symbol(LexicalUnit.SMALLER_EQUAL,yytext()));}
-	".LT."		{addSymbol(symbol(LexicalUnit.SMALLER,yytext()));}
-	".NE."		{addSymbol(symbol(LexicalUnit.DIFFERENT,yytext()));}
-	{INTEGER}	{addSymbol(symbol(LexicalUnit.NUMBER,yytext()));}
-	{VARNAME}              { addSymbol(symbol(LexicalUnit.VARNAME,yytext())); }
-	{LineTerminator}       { addSymbol(symbol(LexicalUnit.ENDLINE," ")); }
+	"="		{symbol(LexicalUnit.EQUAL);}
+	"-"		{symbol(LexicalUnit.MINUS);}
+	"+"		{symbol(LexicalUnit.PLUS);}
+	"*"		{symbol(LexicalUnit.TIMES);}
+	"/"		{symbol(LexicalUnit.DIVIDE);}
+	".NOT."		{symbol(LexicalUnit.NOT);}
+	".AND."		{symbol(LexicalUnit.AND);}
+	".OR."		{symbol(LexicalUnit.OR);}
+	".EQ."		{symbol(LexicalUnit.EQUAL_COMPARE);}
+	".GE."		{symbol(LexicalUnit.GREATER_EQUAL);}
+	".GT."		{symbol(LexicalUnit.GREATER);}
+	".LE."		{symbol(LexicalUnit.SMALLER_EQUAL);}
+	".LT."		{symbol(LexicalUnit.SMALLER);}
+	".NE."		{symbol(LexicalUnit.DIFFERENT);}
+
+
+	{Number}	{symbol(LexicalUnit.NUMBER);}
+	{Identifier} 	{foundIdentifier();
+			symbol(LexicalUnit.VARNAME);}
+	
+	{LineTerminator} {symbol(LexicalUnit.ENDLINE, " ");}
 
 }
 
-^ {Comment}  { /* ignore */ }
-{WhiteSpace} { /* ignore */ }
-. 			 {}
+^{Comment} 		{ /* Ignore */ }
+{WhiteSpace} 	{ /* Ignore */ }
+. 			{}

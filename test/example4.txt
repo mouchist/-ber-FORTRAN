@@ -1,0 +1,4 @@
+PROGRAM notIntegers
+ INTEGER a = -00200/-00010*-030
+ PRINT*,a
+END

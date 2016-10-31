@@ -1,0 +1,7 @@
+program adding
+integer a,b,c
+	a=1234567
+	b=000432
+	c=-51323
+print*, a+b+c
+end

@@ -1,0 +1,31 @@
+program example2
+
+*comparing numbers
+
+	integer c1,d1,i1, large
+
+!read input
+
+	read*, c1
+	Read*, d1
+	ReaD*, i1
+
+c compare numbers
+
+*testing c1 first
+
+	if (c1 .GE. d1 .AND. c1 .GE. i1 ) tHEN
+ large = c1
+	else
+*testing d1 and i1 after
+		IF(d1 .GE. i1) then
+			large =d1
+		else
+			large= i1
+		endif
+	endif
+print*,large
+end
+		
+
+	
