@@ -1,0 +1,52 @@
+<project name="-ber-FORTRAN" default="dist" basedir=".">
+  <!-- set global properties for this build -->
+  <property name="delivery" location="../delivery"/>	
+  <property name="src" location="."/>
+  <property name="build" location="${delivery}/build"/>
+  <property name="dist" location="${delivery}/dist"/>
+  <property name="distjavadoc" location="${delivery}/doc"/>
+  <property name="jflex" location="D:\MA-INFO\INFO-F403 - Introduction to language theory and compiling\jflex-1.6.1\lib"/>
+  <property name="test" location="${delivery}/test"/>
+  <property name="more" location="${delivery}/more"/>
+  
+  <target name="init">
+    <!-- Create the build directory structure used by compile -->
+	<delete dir="${delivery}"/>
+	<mkdir dir="${delivery}"/>
+    <mkdir dir="${build}"/>
+	
+	<copydir src="${src}/test" dest="${delivery}/test"/>
+	<mkdir dir="${more}"/>
+	<delete dir="${distjavadoc}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source">
+	<javadoc sourcefiles=" ${src}/Symbol.java, ${src}/LexicalUnit.java, ${src}/LexicalAnalyser.java" destdir="${distjavadoc}"/>
+	<!--  	-->
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}"/>
+  </target>
+<!-- java -jar "%jflex%\jflex-1.6.1.jar" test.flex -->
+  <target name="jflex">
+	<java fork="true" jar="${jflex}\jflex-1.6.1.jar">
+		<arg value="LexicalAnalyser.flex"/>
+	</java>
+  </target>
+  <target name="dist" depends="jflex, compile"
+        description="generate the distribution">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}"/>
+
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/Uber-FORTRAN-Analyser.jar" basedir="${build}" manifest="./META-INF/MANIFEST.MF"/>
+	<antcall target="clean"/>	
+  </target>
+
+  <target name="clean"
+        description="clean up">
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <!--<delete dir="${dist}"/>-->
+  </target>
+</project>

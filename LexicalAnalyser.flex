@@ -70,8 +70,7 @@ import java.util.ArrayList;
 		}
 	}
   
-	
-  /**
+	/**
    * Runs the scanner on input files.
    *
    * This is a standalone scanner, it will print any unmatched
@@ -80,7 +79,7 @@ import java.util.ArrayList;
    * @param argv   the command line, contains the filenames to run
    *               the scanner on.
    */ 
-  public static void main(String argv[]) {
+  public static void RunScanner(String argv[]) {
     if (argv.length == 0) {
       System.out.println("Usage : java LexicalAnalyser [ --encoding <name> ] <inputfile(s)>");
     }
@@ -105,8 +104,9 @@ import java.util.ArrayList;
           java.io.FileInputStream stream = new java.io.FileInputStream(argv[i]);
           java.io.Reader reader = new java.io.InputStreamReader(stream, encodingName);
           scanner = new LexicalAnalyser(reader);
-		  scanner.inputFile = argv[i];
+		  //scanner.inputFile = argv[i];
           while ( !scanner.zzAtEOF ) scanner.yylex();
+		  scanner.export(argv[i]);
         }
         catch (java.io.FileNotFoundException e) {
           System.out.println("File not found : \""+argv[i]+"\"");
@@ -123,6 +123,31 @@ import java.util.ArrayList;
       }
     }
   
+  }
+  
+  
+  public void export(String inputFile) {
+	    BufferedWriter output = null;
+        try {
+            File file = new File(inputFile+".out");
+            output = new BufferedWriter(new FileWriter(file));
+            //output.write("");
+			
+			for(int i=0 ; i< tokenList.size(); i++)
+			{
+				output.write(tokenList.get(i).toString()+"\n");
+			}
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        } finally {
+          if ( output != null ) {
+            try{
+				output.close();
+			} catch ( IOException e ) {
+				e.printStackTrace();
+			}
+          }
+        }
   }
 	
 	private void printIdentifiers(){
@@ -184,7 +209,7 @@ Comment = {CommentSymbol} ~{LineTerminator}
 	/* seperators */
 	","		{symbol(LexicalUnit.COMMA);}
 	"("		{symbol(LexicalUnit.LEFT_PARENTHESIS);}
-	")"	{symbol(LexicalUnit.RIGHT_PARENTHESIS);}
+	")"		{symbol(LexicalUnit.RIGHT_PARENTHESIS);}
 
 	/* operators */
 	"="		{symbol(LexicalUnit.EQUAL);}
