@@ -90,8 +90,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
 CommentSymbol = [cC*dD!]
 
-Number = 0 | [1-9][0-9]*
-Number_0_Followed_by_0 = 0+0
+Number = [0-9]+
 
 Identifier = [:jletter:][:jletterdigit:]*
 
@@ -149,7 +148,6 @@ Comment = {CommentSymbol} ~{LineTerminator}
 
 ^{Comment} 		{ /* Ignore */ }
 {WhiteSpace} 	{ /* Ignore */ }
-{Number_0_Followed_by_0} { /* Ignore */ }
 . 			{}
 
 
