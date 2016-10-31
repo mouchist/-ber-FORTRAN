@@ -41,8 +41,7 @@ import java.io.FileWriter;
 	}
   }
   
-	
-  /**
+	/**
    * Runs the scanner on input files.
    *
    * This is a standalone scanner, it will print any unmatched
@@ -51,7 +50,7 @@ import java.io.FileWriter;
    * @param argv   the command line, contains the filenames to run
    *               the scanner on.
    */ 
-  public static void main(String argv[]) {
+  public static void RunScanner(String argv[]) {
     if (argv.length == 0) {
       System.out.println("Usage : java LexicalAnalyser [ --encoding <name> ] <inputfile(s)>");
     }
@@ -76,8 +75,9 @@ import java.io.FileWriter;
           java.io.FileInputStream stream = new java.io.FileInputStream(argv[i]);
           java.io.Reader reader = new java.io.InputStreamReader(stream, encodingName);
           scanner = new LexicalAnalyser(reader);
-		  scanner.inputFile = argv[i];
+		  //scanner.inputFile = argv[i];
           while ( !scanner.zzAtEOF ) scanner.yylex();
+		  scanner.export(argv[i]);
         }
         catch (java.io.FileNotFoundException e) {
           System.out.println("File not found : \""+argv[i]+"\"");
@@ -95,21 +95,37 @@ import java.io.FileWriter;
     }
   
   }
+  
+  
+  public void export(String inputFile) {
+	    BufferedWriter output = null;
+        try {
+            File file = new File(inputFile+".out");
+            output = new BufferedWriter(new FileWriter(file));
+            //output.write("");
+			
+			for(int i=0 ; i< symbols.size(); i++)
+			{
+				output.write(symbols.get(i).toString()+"\n");
+			}
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        } finally {
+          if ( output != null ) {
+            try{
+				output.close();
+			} catch ( IOException e ) {
+				e.printStackTrace();
+			}
+          }
+        }
+  }
 	
 %}
 
 %init{
   symbols = new LinkedList();
 %init}
-
-%eof{
-
-for(int i=0 ; i< symbols.size(); i++)
-{
-	System.out.println(symbols.get(i).toString());
-}
-%eof}
-
 
 LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]
