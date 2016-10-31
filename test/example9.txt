@@ -1,0 +1,4 @@
+! Testing the case sensitivity of variables
+PROGRAM caseSensitiveVarName
+	INTEGER aa,Aa,aA
+END PROGRAM
